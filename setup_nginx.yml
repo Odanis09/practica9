@@ -1,0 +1,32 @@
+---
+- name: Configurar servidor Nginx como balanceador de carga
+  hosts: all
+  become: yes
+  tasks:
+    - name: Instalar Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Configurar Nginx como balanceador de carga
+      copy:
+        dest: /etc/nginx/sites-available/default
+        content: |
+          upstream backend {
+              server 192.168.33.10;
+              server 192.168.33.11;
+          }
+
+          server {
+              listen 80;
+
+              location / {
+                  proxy_pass http://backend;
+              }
+          }
+
+    - name: Reiniciar Nginx para aplicar la configuración
+      service:
+        name: nginx
+        state: restarted

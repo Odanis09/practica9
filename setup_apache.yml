@@ -1,0 +1,25 @@
+---
+- name: Configurar servidor Apache
+  hosts: all
+  become: yes
+  tasks:
+    - name: Instalar Apache
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Iniciar y habilitar el servicio de Apache
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Crear una página de inicio personalizada
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <html>
+          <head><title>Servidor Apache</title></head>
+          <body><h1>Bienvenido al servidor Apache {{ inventory_hostname }}</h1></body>
+          </html>
